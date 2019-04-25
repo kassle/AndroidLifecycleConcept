@@ -3,4 +3,5 @@
     <string name="label_counter">Counter:</string>
     <string name="button_count">Start</string>
     <string name="toast_task_completed">Completed</string>
+    <string name="concept_description">Press Start to begin simulating retrieve data from network, meanwhile do rotating, close and reopen apps to simulate activity destroyed, onstop and onstart lifecycle while data still running</string>
 </resources>

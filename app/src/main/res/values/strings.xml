@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">AndroidLifecycleConcept</string>
+    <string name="label_counter">Counter:</string>
+    <string name="button_count">Start</string>
+    <string name="toast_task_completed">Completed</string>
+</resources>

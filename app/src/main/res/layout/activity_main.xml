@@ -19,6 +19,12 @@
             android:layout_height="25dp"
             android:max="10" />
 
+        <CheckBox
+            android:id="@+id/cbProgressDialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/mode_dialog" />
+
         <Button
             android:id="@+id/btCount"
             android:layout_width="match_parent"

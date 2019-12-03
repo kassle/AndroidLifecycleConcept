@@ -1,6 +1,7 @@
 package org.krybrig.concept.androidlifecycle;
 
 import android.app.ProgressDialog;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,7 +18,7 @@ import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity {
     private static final String STATE_KEY_PROGRESS = "org.krybrig.state.progress";
-    private static final String STATE_KEY_BUTTON = "org.krybrig.state.button";
+    private static final String STATE_KEY_BUTTON = "org.krybrig.state.btStartCount";
     private static final String STATE_KEY_RESUME_LIVE_DATA = "org.krybrig.state.livedata";
     private static final String STATE_KEY_PROGRESSBAR_AS_DIALOG = "org.krybrig.state.progressAsDialog";
     private static final String STATE_KEY_CHECKBOX_DIALOG = "org.krybrig.state.checkbox";
@@ -26,7 +27,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean resume;
 
     private DataProducer producer;
-    private Button button;
+    private Button btStartCount;
+    private Button btDialogLifecycle;
     private CheckBox cbProgressAsDialog;
 
     private ProgressBar pgbar;
@@ -36,12 +38,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.e("KASSLE", "Main activity onCreate");
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
         producer = new DataProducer();
 
-        button = findViewById(R.id.btCount);
+        btStartCount = findViewById(R.id.btCount);
+        btDialogLifecycle = findViewById(R.id.btDialogLifecycle);
         cbProgressAsDialog = findViewById(R.id.cbProgressDialog);
 
         pgbar = findViewById(R.id.pgbar);
@@ -56,13 +60,15 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             restoreViewState(savedInstanceState);
         }
+
+        Log.e("KASSLE", "Main activity onCreated");
     }
 
     private void restoreViewState(Bundle savedInstanceState) {
         boolean asDialog = savedInstanceState.getBoolean(STATE_KEY_PROGRESSBAR_AS_DIALOG, false);
         cbProgressAsDialog.setChecked(asDialog);
         cbProgressAsDialog.setEnabled(savedInstanceState.getBoolean(STATE_KEY_CHECKBOX_DIALOG, true));
-        button.setEnabled(savedInstanceState.getBoolean(STATE_KEY_BUTTON, true));
+        btStartCount.setEnabled(savedInstanceState.getBoolean(STATE_KEY_BUTTON, true));
         resume = savedInstanceState.getBoolean(STATE_KEY_RESUME_LIVE_DATA, false);
 
         progress = savedInstanceState.getInt(STATE_KEY_PROGRESS, 0);
@@ -71,39 +77,51 @@ public class MainActivity extends AppCompatActivity {
         } else {
             pgbar.setProgress(progress);
         }
-        Log.w("COUNTER", "Load progress: " + pgbar.getProgress() + "; button = " + button.isEnabled() + "; resume = " + resume);
+        Log.w("COUNTER", "Load progress: " + pgbar.getProgress() + "; btStartCount = " + btStartCount.isEnabled() + "; resume = " + resume);
     }
 
     @Override
     protected void onStart() {
+        Log.e("KASSLE", "Main activity onStart");
         super.onStart();
 
-        button.setOnClickListener(new View.OnClickListener() {
+        btStartCount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startLiveData();
+            }
+        });
+        btDialogLifecycle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLifecycleDialog();
             }
         });
 
         if (resume) {
             resumeLiveData();
         }
+
+        Log.e("KASSLE", "Main activity onStarted");
     }
 
     @Override
     protected void onStop() {
-        button.setOnClickListener(null);
+        Log.e("KASSLE", "Main activity onStop");
+        btStartCount.setOnClickListener(null);
+        btDialogLifecycle.setOnClickListener(null);
 
         if (disposable!= null) {
             disposable.dispose();
         }
 
         super.onStop();
+        Log.e("KASSLE", "Main activity onStoped");
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean(STATE_KEY_BUTTON, button.isEnabled());
+        outState.putBoolean(STATE_KEY_BUTTON, btStartCount.isEnabled());
         outState.putInt(STATE_KEY_PROGRESS, pgbar.getProgress());
         outState.putBoolean(STATE_KEY_PROGRESSBAR_AS_DIALOG, cbProgressAsDialog.isChecked());
         outState.putBoolean(STATE_KEY_CHECKBOX_DIALOG, cbProgressAsDialog.isEnabled());
@@ -114,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startLiveData() {
         resume = true;
-        button.setEnabled(false);
+        btStartCount.setEnabled(false);
         cbProgressAsDialog.setEnabled(false);
 
         progress = 0;
@@ -131,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                 .doOnComplete(new Action() {
                     @Override
                     public void run() throws Exception {
-                        button.setEnabled(true);
+                        btStartCount.setEnabled(true);
                         resume = false;
                         cbProgressAsDialog.setEnabled(true);
                         Toast.makeText(MainActivity.this, R.string.toast_task_completed, Toast.LENGTH_SHORT).show();
@@ -171,5 +189,17 @@ public class MainActivity extends AppCompatActivity {
         } else {
             pgbar.setProgress(progress);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.e("KASSLE", "Main activity onDestroy");
+        super.onDestroy();
+        Log.e("KASSLE", "Main activity onDestroyed");
+    }
+
+    private void showLifecycleDialog() {
+        DialogFragment dialogFragment = new LifecycleDialogFragment();
+        dialogFragment.show(getSupportFragmentManager(), LifecycleDialogFragment.class.getName());
     }
 }

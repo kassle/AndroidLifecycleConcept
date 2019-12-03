@@ -5,4 +5,8 @@
     <string name="toast_task_completed">Completed</string>
     <string name="mode_dialog">Show Progress Bar as Dialog</string>
     <string name="concept_description">Press Start to begin simulating retrieve data from network, meanwhile do rotating, close and reopen apps to simulate activity destroyed, onstop and onstart lifecycle while data still running</string>
+    <string name="button_dialog_lifecycle">Example Dialog Lifecycle</string>
+    <string name="dialog_lifecycle_title">Example Dialog Lifecycle</string>
+    <string name="dialog_lifecycle_content">This is an example how to handling dialog safely</string>
+    <string name="button_dismiss">Dismiss</string>
 </resources>
